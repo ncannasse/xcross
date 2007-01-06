@@ -63,16 +63,17 @@ class Run {
 		var exe_osx = build(file,content,"osx");
 		var exe_linux = build(file,content,"linux");
 		if( args.shift() == "-x" ) {
+			var win = false;
 			var cmd = switch( neko.Sys.systemName() ) {
 			case "Mac": exe_osx;
-			case "Windows": exe_win;
+			case "Windows": win = true; exe_win;
 			case "Linux": exe_linux;
 			default: throw "Unknown system";
 			}
 			var p = new neko.io.Path(cmd);
 			if( p.dir != null ) {
 				neko.Sys.setCwd(p.dir);
-				p.dir = null;
+				p.dir = if( win ) null else "./";
 			}
 			neko.Sys.command( p.toString() );
 		}
