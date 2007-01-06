@@ -62,18 +62,24 @@ class Run {
 		var exe_win = build(file,content,"win");
 		var exe_osx = build(file,content,"osx");
 		var exe_linux = build(file,content,"linux");
+		var system = neko.Sys.systemName();
+		var win = (system == "Windows");
+		if( !win ) {
+			neko.Sys.command("chmod +x "+exe_win);
+			neko.Sys.command("chmod +x "+exe_osx);
+			neko.Sys.command("chmod +x "+exe_linux);
+		}
 		if( args.shift() == "-x" ) {
-			var win = false;
-			var cmd = switch( neko.Sys.systemName() ) {
+			var cmd = switch( system ) {
 			case "Mac": exe_osx;
-			case "Windows": win = true; exe_win;
+			case "Windows": exe_win;
 			case "Linux": exe_linux;
 			default: throw "Unknown system";
 			}
 			var p = new neko.io.Path(cmd);
 			if( p.dir != null ) {
 				neko.Sys.setCwd(p.dir);
-				p.dir = if( win ) null else "./";
+				p.dir = if( win ) null else ".";
 			}
 			neko.Sys.command( p.toString() );
 		}
