@@ -1,0 +1,5 @@
+<project name="xcross" url="http://haxe.org/xcross" license="GPL">
+    <user name="ncannasse"/>
+    <description>xCross is a package to cross-build zero-depencency haXe applications</description>
+    <version name="alpha">Initial Release</version>
+</project>
