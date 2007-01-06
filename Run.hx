@@ -18,14 +18,15 @@
 class Run {
 
 	static function build(file,content,os) {
-		var exe_content = neko.io.File.getContent("bin/xcross_"+os);
+		var exe_content = neko.io.File.getContent("bin/xcross-"+os);
 		var p = new neko.io.Path(file);
 		if( os == "win" )
 			p.ext = "exe";
 		else
 			p.ext = null;
 		p.file += "-"+os;
-		var out = neko.io.File.write(p.toString(),true);
+		var exe_file = p.toString();
+		var out = neko.io.File.write(exe_file,true);
 		// similar to nekotools "boot"
 		var it = exe_content.split("##BOOT_POS\000\000\000\000##").iterator();
 		for( part in it ) {
@@ -38,6 +39,7 @@ class Run {
 		}
 		out.write(content);
 		out.close();
+		return exe_file;
 	}
 
 	static function main() {
@@ -50,16 +52,30 @@ class Run {
 		var content = try
 			neko.io.File.getContent(file)
 		catch( e : Dynamic ) try {
-			file = args.shift()+file;
+			file = args.pop()+file;
 			neko.io.File.getContent(file);
 		} catch( e : Dynamic ) {
 			neko.Lib.print("Could not find file '"+file+"', please specify absolute path");
 			neko.Sys.exit(2);
 			"";
 		}
-		build(file,content,"win");
-		build(file,content,"osx");
-		build(file,content,"linux");
+		var exe_win = build(file,content,"win");
+		var exe_osx = build(file,content,"osx");
+		var exe_linux = build(file,content,"linux");
+		if( args.shift() == "-x" ) {
+			var cmd = switch( neko.Sys.systemName() ) {
+			case "Mac": exe_osx;
+			case "Windows": exe_win;
+			case "Linux": exe_linux;
+			default: throw "Unknown system";
+			}
+			var p = new neko.io.Path(cmd);
+			if( p.dir != null ) {
+				neko.Sys.setCwd(p.dir);
+				p.dir = null;
+			}
+			neko.Sys.command( p.toString() );
+		}
 	}
 }
 

@@ -16,6 +16,11 @@ release:
 	rm -rf xcross-release/*/.svn
 	zip -r xcross-release.zip xcross-release
 	rm -rf xcross-release
+	-haxelib remove xcross
+	haxelib test xcross-release.zip
 
-.PHONY: all linux osx clean
+test:
+	(cd test && haxe -lib xcross -main Test -neko test.n && haxelib run xcross test.n -x)
+
+.PHONY: all linux osx clean release test
 

@@ -26,7 +26,7 @@ class Api {
 		untyped os_dialog(title.__s,message.__s,true,false);
 	}
 
-	public static function question( title : String, message : String ) : Bool {
+	public static function confirm( title : String, message : String ) : Bool {
 		return untyped os_dialog(title.__s,message.__s,false,true);
 	}
 
