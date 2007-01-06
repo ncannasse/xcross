@@ -23,7 +23,7 @@ ${XCROSS_TARGET}: ${XCROSS_OBJECTS}
 	${CC} ${CFLAGS} ${EXTFLAGS} ${XCROSS_FLAGS} -o $@ ${XCROSS_OBJECTS} ${XCROSS_LIBS}
 	strip $@
 
-clean:
+xcross_clean:
 	rm -rf ${XCROSS_TARGET} ${XCROSS_OBJECTS}
 
 .SUFFIXES : .c .o2
