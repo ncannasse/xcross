@@ -95,7 +95,7 @@
 				Name="VCMIDLTool"/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="copy release\xcross.exe bin\xcross_win"/>
+				CommandLine="copy release\xcross.exe bin\xcross-win"/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
 			<Tool

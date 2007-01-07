@@ -143,6 +143,7 @@ PRIM(std,set_time_locale,1);
 PRIM(std,get_cwd,0);
 PRIM(std,set_cwd,1);
 PRIM(std,sys_string,0);
+PRIM(std,sys_exit,1);
 PRIM(std,sys_command,1);
 PRIM(std,sys_exists,1);
 PRIM(std,file_delete,1);
