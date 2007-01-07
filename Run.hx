@@ -44,6 +44,27 @@ class Run {
 
 	static function main() {
 		var args = neko.Sys.args();
+		var forwin = true, forosx = true, forlinux = true;
+		var execute = false;
+		while( true ) {
+			switch( args[0] ) {
+			case "-x":
+				execute = true;
+			case "-win":
+				forosx = false;
+				forlinux = false;
+			case "-osx":
+				forwin = false;
+				forlinux = false;
+			case "-linux":
+				forwin = false;
+				forosx = false;
+			default:
+				break;
+			}
+			args.shift();
+		}
+
 		var file = args.shift();
 		if( file == null ) {
 			neko.Lib.print("Please specify a .n file to package");
@@ -59,23 +80,25 @@ class Run {
 			neko.Sys.exit(2);
 			"";
 		}
-		var exe_win = build(file,content,"win");
-		var exe_osx = build(file,content,"osx");
-		var exe_linux = build(file,content,"linux");
+		var exe_win = if( forwin ) build(file,content,"win") else null;
+		var exe_osx = if( forosx ) build(file,content,"osx") else null;
+		var exe_linux = if( forlinux ) build(file,content,"linux") else null;
 		var system = neko.Sys.systemName();
 		var win = (system == "Windows");
 		if( !win ) {
-			neko.Sys.command("chmod +x "+exe_win);
-			neko.Sys.command("chmod +x "+exe_osx);
-			neko.Sys.command("chmod +x "+exe_linux);
+			if( forwin ) neko.Sys.command("chmod +x "+exe_win);
+			if( forosx ) neko.Sys.command("chmod +x "+exe_osx);
+			if( forlinux ) neko.Sys.command("chmod +x "+exe_linux);
 		}
-		if( args.shift() == "-x" ) {
+		if( execute ) {
 			var cmd = switch( system ) {
 			case "Mac": exe_osx;
 			case "Windows": exe_win;
 			case "Linux": exe_linux;
 			default: throw "Unknown system";
 			}
+			if( cmd == null )
+				throw "Can't run since it's not built";
 			var p = new neko.io.Path(cmd);
 			if( p.dir != null ) {
 				neko.Sys.setCwd(p.dir);
