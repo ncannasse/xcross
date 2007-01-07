@@ -12,7 +12,8 @@ XCROSS_FLAGS = -I /opt/local/include -I /Developer/Headers/FlatCarbon
 XCROSS_LIBS = ${UNIV}/libpcre.a ${UNIV}/libz.a ${UNIV}/libgc.a /System/Library/Frameworks/Carbon.framework/Carbon
 endif
 
-_XCROSS_OBJECTS = libs/xcross/src/xcross.o libs/xcross/src/api.o libs/xcross/src/sys_${XCROSS_OS}.o libs/regexp/regexp.o libs/zlib/zlib.o ${STD_OBJECTS} ${LIBNEKO_OBJECTS} ${VM_OBJECTS}
+SRC = libs/xcross/src
+_XCROSS_OBJECTS = ${SRC}/xcross.o ${SRC}/api.o ${SRC}/sys_${XCROSS_OS}.o libs/regexp/regexp.o libs/zlib/zlib.o ${STD_OBJECTS} ${LIBNEKO_OBJECTS} ${VM_OBJECTS}
 
 XCROSS_OBJECTS = ${_XCROSS_OBJECTS:.o=.o2}
 XCROSS_TARGET = libs/xcross/bin/xcross-${XCROSS_OS}
@@ -25,6 +26,12 @@ ${XCROSS_TARGET}: ${XCROSS_OBJECTS}
 
 xcross_clean:
 	rm -rf ${XCROSS_TARGET} ${XCROSS_OBJECTS}
+
+${SRC}/xcross.o2: ${SRC}/primitives.h
+
+${SRC}/api.o2: ${SRC}/sys.h
+
+${SRC}/sys_${XCROSS_OS}.o2: ${SRC}/sys.h
 
 .SUFFIXES : .c .o2
 
