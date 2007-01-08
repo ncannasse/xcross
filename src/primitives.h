@@ -128,6 +128,8 @@ PRIM(std,socket_host,1);
 PRIM(std,socket_set_timeout,2);
 PRIM(std,socket_shutdown,3);
 PRIM(std,socket_set_blocking,2);
+PRIM(std,socket_poll_alloc,1);
+PRIM(std,socket_poll,3);
 
 PRIM(std,string_split,2);
 PRIM(std,sprintf,2);
