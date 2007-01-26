@@ -217,5 +217,12 @@ PRIM(zlib,update_crc32,4);
 PRIM(zlib,deflate_bound,2);
 
 PRIM(xcross,os_dialog,4);
+PRIM(xcross,os_loop,0);
+PRIM(xcross,os_stop,0);
+PRIM(xcross,os_sync,1);
+PRIM(xcross,os_winlog_new,2);
+PRIM(xcross,os_winlog_set,2);
+PRIM(xcross,os_winlog_set_button,3);
+PRIM(xcross,os_winlog_destroy,1);
 
 /* ************************************************************************ */

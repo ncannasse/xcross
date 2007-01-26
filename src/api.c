@@ -17,6 +17,15 @@
 #include "sys.h"
 #include <neko.h>
 
+typedef struct {
+	void *p;
+	value click;
+} window;
+
+#define val_window(v)		((window*)val_data(v))
+
+DEFINE_KIND(k_winlog);
+
 static value os_dialog( value title, value msg, value error, value confirm ) {
 	int r;
 	val_check(title,string);
@@ -31,6 +40,78 @@ static value os_dialog( value title, value msg, value error, value confirm ) {
 	return alloc_bool(r);
 }
 
+static value os_loop() {
+	sys_loop();
+	return val_null;
+}
+
+static value os_stop() {
+	sys_stop();
+	return val_null;
+}
+
+static void sync_callback( void *_r ) {
+	value *r = (value*)_r;
+	value f = *r;
+	free_root(r);
+	val_call0(f);	
+}
+
+static void wnd_callback( void *_w ) {
+	window *w = (window*)_w;
+	val_call0(w->click);
+}
+
+static value os_sync( value f ) {
+	value *r;
+	val_check_function(f,0);
+	r = alloc_root(1);
+	*r = f;
+	sys_sync(sync_callback,r);
+	return val_null;
+}
+
+static value os_winlog_new( value title, value f ) {
+	window *w;	
+	val_check(title,string);
+	val_check_function(f,0);
+	w = (window*)alloc(sizeof(window));
+	w->click = f;
+	w->p = sys_winlog_new(val_string(title),wnd_callback,w);
+	if( w->p == NULL )		
+		neko_error();	
+	return alloc_abstract(k_winlog,w);
+}
+
+static value os_winlog_set( value wnd, value txt ) {
+	val_check_kind(wnd,k_winlog);
+	val_check(txt,string);
+	sys_winlog_set(val_window(wnd)->p,val_string(txt));
+	return val_null;
+}
+
+static value os_winlog_set_button( value wnd, value txt, value enabled ) {
+	val_check_kind(wnd,k_winlog);
+	val_check(txt,string);
+	val_check(enabled,bool);
+	sys_winlog_set_button(val_window(wnd)->p,val_string(txt),val_bool(enabled));
+	return val_null;
+}
+
+static value os_winlog_destroy( value wnd ) {
+	val_check_kind(wnd,k_winlog);
+	sys_winlog_destroy(val_window(wnd)->p);
+	val_kind(wnd) = NULL;
+	return val_null;
+}
+
 DEFINE_PRIM(os_dialog,4);
+DEFINE_PRIM(os_loop,0);
+DEFINE_PRIM(os_sync,1);
+DEFINE_PRIM(os_stop,0);
+DEFINE_PRIM(os_winlog_new,2);
+DEFINE_PRIM(os_winlog_set,2);
+DEFINE_PRIM(os_winlog_set_button,3);
+DEFINE_PRIM(os_winlog_destroy,1);
 
 /* ************************************************************************ */

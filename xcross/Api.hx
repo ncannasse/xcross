@@ -30,7 +30,22 @@ class Api {
 		return untyped os_dialog(title.__s,message.__s,false,true);
 	}
 
+	public static function loop() {
+		os_loop();
+	}
+
+	public static function stop() {
+		os_stop();
+	}
+
+	public static function sync( f : Void -> Void ) {
+		os_sync(f);
+	}
+
 	static var os_dialog = neko.Lib.load("xcross","os_dialog",4);
+	static var os_loop = neko.Lib.load("xcross","os_loop",0);
+	static var os_stop = neko.Lib.load("xcross","os_stop",0);
+	static var os_sync = neko.Lib.load("xcross","os_sync",1);
 
 }
 
