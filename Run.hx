@@ -27,17 +27,10 @@ class Run {
 		p.file += "-"+os;
 		var exe_file = p.toString();
 		var out = neko.io.File.write(exe_file,true);
-		// similar to nekotools "boot"
-		var it = exe_content.split("##BOOT_POS\000\000\000\000##").iterator();
-		for( part in it ) {
-			out.write(part);
-			if( it.hasNext() ) {
-				out.write("##BOOT_POS");
-				out.writeInt32(exe_content.length);
-				out.write("##");
-			}
-		}
+		out.write(exe_content);
 		out.write(content);
+		out.write("NEKO");
+		out.writeInt32(exe_content.length);
 		out.close();
 		return exe_file;
 	}
