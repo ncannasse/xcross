@@ -22,6 +22,13 @@ class Winlog {
 		text += line + "\n";
 	}
 
+	public function logProgress( line : String ) {
+		var lines = text.split("\n");
+		lines.pop();
+		lines.push(line);
+		text = lines.join("\n");
+	}
+
 	public function destroy() {
 		winlog_destroy(w);
 	}
