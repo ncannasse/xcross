@@ -20,6 +20,15 @@
 void sys_init() {
 }
 
+void sys_loop() {
+}
+
+void sys_stop() {
+}
+
+void sys_sync( sys_callback cb, void *param ) {
+}
+
 int sys_dialog( const char *title, const char *message, int flags ) {
 	CFOptionFlags result;
 	CFUserNotificationDisplayAlert(
@@ -33,6 +42,19 @@ int sys_dialog( const char *title, const char *message, int flags ) {
 		&result
 	);
 	return (flags & DLG_CONFIRM) && (result == kCFUserNotificationDefaultResponse);
+}
+
+void *sys_winlog_new( const char *title, sys_callback cb, void *param ) {
+	return NULL;
+}
+
+void sys_winlog_set( void *wnd, const char *txt ) {
+}
+
+void sys_winlog_set_button( void *wnd, const char *txt, int enabled ) {
+}
+
+void sys_winlog_destroy( void *wnd ) {
 }
 
 /* ************************************************************************ */
