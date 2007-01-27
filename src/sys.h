@@ -18,7 +18,7 @@
 #define DLG_ERROR		1
 #define DLG_CONFIRM		2
 
-typedef void (*sys_callback)( void * );
+typedef void *(*sys_callback)( void * );
 
 void sys_init();
 void sys_loop();

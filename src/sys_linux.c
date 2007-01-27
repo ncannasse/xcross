@@ -14,15 +14,26 @@
 /* Lesser General Public License or the LICENSE file for more details.		*/
 /*																			*/
 /* ************************************************************************ */
+#include <malloc.h>
+#include <X11/Xlib.h>
 #include <gtk/gtk.h>
 #include <pthread.h>
+#include <locale.h>
 #include "sys.h"
 
 pthread_t main_thread_id;
 
+static gint nothing( gpointer data ) {
+	return TRUE;
+}
+
 void sys_init() {
 	XInitThreads();
 	gtk_init(NULL,NULL);
+	// keep the loop alive
+	gtk_timeout_add( 100, nothing, NULL );
+	// prevent atof() from being broken !
+	setlocale(LC_NUMERIC,"POSIX");
 	main_thread_id = pthread_self();
 }
 
@@ -46,10 +57,7 @@ static gint gtk_event( GtkWidget *_, sig_data *_d ) {
 }
 
 void sys_sync( sys_callback cb, void *param ) {
-	sc_data *d = (sc_data*)malloc(sizeof(sc_data));
-	d->callback = cb;
-	d->param = param;
-	gtk_idle_add( cb, (gpointer)param );
+	gtk_idle_add( (GtkFunction)cb, (gpointer)param );
 }
 
 int sys_dialog( const char *title, const char *message, int flags ) {
@@ -61,7 +69,7 @@ int sys_dialog( const char *title, const char *message, int flags ) {
 		(flags & DLG_CONFIRM) ? GTK_BUTTONS_YES_NO : GTK_BUTTONS_OK,
 		"%s", title
 	);
-	gtk_message_dialog_format_secondary_text(GTK_DIALOG(dialog),"%s",message);
+	gtk_message_dialog_format_secondary_text(GTK_MESSAGE_DIALOG(dialog),"%s",message);
 	ret = gtk_dialog_run( GTK_DIALOG(dialog) );
 	gtk_widget_destroy( dialog );
 	return (ret == GTK_RESPONSE_YES);
@@ -69,7 +77,10 @@ int sys_dialog( const char *title, const char *message, int flags ) {
 
 typedef struct {
 	GtkWidget *wnd;
-	GtkWidegt *panel;
+	GtkWidget *panel;
+	GtkWidget *button;
+	GtkWidget *text;
+	GtkAdjustment *bar;
 	sig_data click;
 } winlog;
 
@@ -81,9 +92,10 @@ static gboolean cancel_delete( GtkWidget *widget, GdkEvent  *event, gpointer dat
 void *sys_winlog_new( const char *title, sys_callback cb, void *param ) {
 	winlog *w = (winlog*)malloc(sizeof(winlog));
 	int width = 400, height = 300;
+	GtkWidget *scroll;
 
 	// window
-	w->wnd = gtk_window_new(GTW_WINDOW_TOPLEVEL);
+	w->wnd = gtk_window_new(GTK_WINDOW_TOPLEVEL);
 	gtk_window_set_title(GTK_WINDOW(w->wnd),title);
 	gtk_container_set_border_width(GTK_CONTAINER(w->wnd),5);
 	gtk_window_set_default_size(GTK_WINDOW(w->wnd),width,height);
@@ -91,18 +103,25 @@ void *sys_winlog_new( const char *title, sys_callback cb, void *param ) {
 
 	// panel
 	w->panel = gtk_vbox_new (FALSE,2);	
-	gtk_container_add(GTK_CONTAINER(window),w->panel);	
+	gtk_container_add(GTK_CONTAINER(w->wnd),w->panel);	
 
+	// scroll
+	scroll = gtk_scrolled_window_new(NULL,NULL);
+	w->bar = gtk_scrolled_window_get_vadjustment(GTK_SCROLLED_WINDOW(scroll));
+	gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scroll),GTK_POLICY_AUTOMATIC,GTK_POLICY_ALWAYS);
+	gtk_box_pack_start(GTK_BOX(w->panel),scroll,1,1,0);
+	
 	// text
 	w->text = gtk_text_view_new();
-	gtk_box_pack_start(GTK_BOX(w->panel),w->text,1,1,0);
-	gtk_text_view_set_editable(GTK_TEXTVIEW(w->text),FALSE);
+	gtk_container_add(GTK_CONTAINER(scroll),w->text);
+	gtk_text_view_set_editable(GTK_TEXT_VIEW(w->text),FALSE);
+	gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(w->text),GTK_WRAP_WORD_CHAR);
 
 	// button
 	w->button = gtk_button_new();
 	w->click.callback = cb;
 	w->click.param = param;
-    g_signal_connect(G_OBJECT(w->button),"clicked",G_CALLBACK(move_button),(gpointer)&w->click);
+    g_signal_connect(G_OBJECT(w->button),"clicked",G_CALLBACK(gtk_event),(gpointer)&w->click);
 	gtk_box_pack_start(GTK_BOX(w->panel),w->button,0,0,0);
 
 	// show
@@ -111,20 +130,27 @@ void *sys_winlog_new( const char *title, sys_callback cb, void *param ) {
 }
 
 void sys_winlog_set( void *_wnd, const char *txt ) {
-	window *w = (window*)_wnd;
+	winlog *w = (winlog*)_wnd;
 	GtkTextBuffer *buf = gtk_text_view_get_buffer(GTK_TEXT_VIEW(w->text));
-	gtk_text_buffer_set_text(buf,txt);
+	gdouble pos = w->bar->value;
+	int max = (pos + w->bar->page_size) == w->bar->upper;
+	gtk_text_buffer_set_text(buf,txt,-1);
+	while( gtk_events_pending() )
+		gtk_main_iteration();
+	if( max )
+		pos = w->bar->upper - w->bar->page_size;
+	gtk_adjustment_set_value(w->bar,pos);
 }
 
 void sys_winlog_set_button( void *_wnd, const char *txt, int enabled ) {
-	window *w = (window*)_wnd;
+	winlog *w = (winlog*)_wnd;
 	gtk_button_set_label(GTK_BUTTON(w->button),txt);
 	gtk_widget_set_sensitive(w->button,enabled);
 }
 
 void sys_winlog_destroy( void *_wnd ) {
-	window *w = (window*)_wnd;
-	gtk_widget_destroy(w->window);
+	winlog *w = (winlog*)_wnd;
+	gtk_widget_destroy(w->wnd);
 	free(w);
 }
 

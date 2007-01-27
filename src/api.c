@@ -50,16 +50,18 @@ static value os_stop() {
 	return val_null;
 }
 
-static void sync_callback( void *_r ) {
+static void *sync_callback( void *_r ) {
 	value *r = (value*)_r;
 	value f = *r;
 	free_root(r);
-	val_call0(f);	
+	val_call0(f);
+	return NULL;	
 }
 
-static void wnd_callback( void *_w ) {
+static void *wnd_callback( void *_w ) {
 	window *w = (window*)_w;
 	val_call0(w->click);
+	return NULL;
 }
 
 static value os_sync( value f ) {

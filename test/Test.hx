@@ -5,11 +5,16 @@ class Test {
 	static function thread() {
 		var i = 0;
 		var s = "";
-		while( true ) {
-			s += Std.string(i++);
-			xcross.Api.sync(callback(w.log,s));
-			neko.Sys.sleep(0.5);
-			w.enabled = !w.enabled;
+		try {
+			while( true ) {
+				s += Std.string(i++);
+				xcross.Api.sync(callback(w.log,s));
+				if( Std.random(10) == 0 )
+					w.enabled = !w.enabled;
+				neko.Sys.sleep(0.5);
+			}
+		} catch( e : Dynamic ) {
+			xcross.Api.error("Exception",Std.string(e));
 		}
 	}
 
