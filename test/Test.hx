@@ -7,9 +7,9 @@ class Test {
 		var s = "";
 		while( true ) {
 			s += Std.string(i++);
-			//xcross.Api.sync(callback(w.log,s));
+			xcross.Api.sync(callback(w.log,s));
 			neko.Sys.sleep(0.5);
-			//w.enabled = !w.enabled;
+			w.enabled = !w.enabled;
 		}
 	}
 
