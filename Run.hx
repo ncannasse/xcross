@@ -166,7 +166,10 @@ class Run {
 				neko.Sys.setCwd(p.dir);
 				p.dir = if( win ) null else ".";
 			}
-			neko.Sys.command( p.toString() );
+			if( system == "Mac" && bundle_name != null )
+				neko.Sys.command('open "'+bundle_name+"'");
+			else
+				neko.Sys.command( p.toString() );
 		}
 	}
 }
