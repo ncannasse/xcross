@@ -35,12 +35,75 @@ class Run {
 		return exe_file;
 	}
 
+	static function createDir( d ) {
+		if( !neko.FileSystem.exists(d) )
+			neko.FileSystem.createDirectory(d);
+	}
+
+	static var bundle_xml = '<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>English</string>
+	<key>CFBundleExecutable</key>
+	<string>::exe::</string>
+	<key>CFBundleIdentifier</key>
+	<string>com.motion-twin.xcross.::name::</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>::name::</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleSignature</key>
+	<string>::sign::</string>
+	<key>CFBundleVersion</key>
+	<string>::version::</string>
+	<key>CSResourcesFileMapped</key>
+	<true/>
+	<key>LSMultipleInstancesProhibited</key>
+	<false/>
+</dict>
+</plist>';
+
+	static function createBundle( name, exe ) {
+		var path = new neko.io.Path(exe);
+		var exe_name = path.file;
+		path.ext = "app";
+		path.file = name;
+		var dir = path.toString();
+		createDir(dir);
+		createDir(dir+"/Contents");
+		createDir(dir+"/Contents/MacOS");
+		var f = neko.io.File.write(dir+"/Contents/MacOS/"+exe_name,true);
+		var content = neko.io.File.getContent(exe);
+		var sign = haxe.Md5.encode(content);
+		f.write(content);
+		f.close();
+		var inf = new haxe.Template(bundle_xml).execute({
+			exe : exe_name,
+			name : name,
+			sign : sign,
+			version : "1.0",
+		});
+		var f = neko.io.File.write(dir+"/Contents/Info.plist",true);
+		f.write(inf);
+		f.close();
+		var f = neko.io.File.write(dir+"/Contents/PkgInfo",true);
+		f.write("APPL");
+		f.write(sign);
+		f.close();
+	}
+
 	static function main() {
 		var args = neko.Sys.args();
 		var forwin = true, forosx = true, forlinux = true;
 		var execute = false;
+		var bundle_name = null;
 		while( true ) {
-			switch( args[0] ) {
+			var a = args.shift();
+			switch( a ) {
 			case "-x":
 				execute = true;
 			case "-win":
@@ -49,13 +112,15 @@ class Run {
 			case "-osx":
 				forwin = false;
 				forlinux = false;
+			case "-bundle":
+				bundle_name = args.shift();
 			case "-linux":
 				forwin = false;
 				forosx = false;
 			default:
+				args.unshift(a);
 				break;
 			}
-			args.shift();
 		}
 
 		var file = args.shift();
@@ -83,6 +148,8 @@ class Run {
 			if( forosx ) neko.Sys.command("chmod +x "+exe_osx);
 			if( forlinux ) neko.Sys.command("chmod +x "+exe_linux);
 		}
+		if( forosx && bundle_name != null )
+			createBundle(bundle_name,exe_osx);
 		if( execute ) {
 			var cmd = switch( system ) {
 			case "Mac": exe_osx;

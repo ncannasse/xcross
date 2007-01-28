@@ -20,7 +20,7 @@ release:
 	haxelib test xcross-release.zip
 
 test:
-	(cd test && haxe -lib xcross -main Test -neko test.n && haxelib run xcross -x test.n)
+	(cd test && haxe -lib xcross -main Test -neko test.n && haxelib run xcross -bundle "xcross test" -x test.n)
 
 .PHONY: all linux osx clean release test
 
