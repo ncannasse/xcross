@@ -167,7 +167,7 @@ class Run {
 				p.dir = if( win ) null else ".";
 			}
 			if( system == "Mac" && bundle_name != null )
-				neko.Sys.command('open "'+bundle_name+"'");
+				neko.Sys.command('open "'+bundle_name+'.app"');
 			else
 				neko.Sys.command( p.toString() );
 		}
