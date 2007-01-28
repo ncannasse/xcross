@@ -34,6 +34,8 @@ ${SRC}/api.o2: ${SRC}/sys.h
 
 ${SRC}/sys_${XCROSS_OS}.o2: ${SRC}/sys.h
 
+${SRC}/sys_osx.o2: ${SRC}/res/Utils.c ${SRC}/res/HIScrollingTextBox.c
+
 .SUFFIXES : .c .o2
 
 .c.o2:
