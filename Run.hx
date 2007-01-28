@@ -76,11 +76,13 @@ class Run {
 		createDir(dir);
 		createDir(dir+"/Contents");
 		createDir(dir+"/Contents/MacOS");
-		var f = neko.io.File.write(dir+"/Contents/MacOS/"+exe_name,true);
+		var bundle_exe = dir+"/Contents/MacOS/"+exe_name;
+		var f = neko.io.File.write(bundle_exe,true);
 		var content = neko.io.File.getContent(exe);
 		var sign = haxe.Md5.encode(content);
 		f.write(content);
 		f.close();
+		neko.Sys.command('chmod +x "'+bundle_exe+'"');
 		var inf = new haxe.Template(bundle_xml).execute({
 			exe : exe_name,
 			name : name,
