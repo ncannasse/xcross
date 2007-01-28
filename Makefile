@@ -13,7 +13,7 @@ release:
 	mkdir xcross-release
 	haxe run.hxml	
 	cp -r xcross src bin Run.hx run.n haxelib.xml xcross-release
-	rm -rf xcross-release/*/.svn
+	rm -rf xcross-release/*/.svn xcross-release/*/*/.svn xcross-release.zip
 	zip -r xcross-release.zip xcross-release
 	rm -rf xcross-release
 	-haxelib remove xcross
