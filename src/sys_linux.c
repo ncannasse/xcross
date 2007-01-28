@@ -21,7 +21,7 @@
 #include <locale.h>
 #include "sys.h"
 
-pthread_t main_thread_id;
+static pthread_t main_thread_id;
 
 static gint nothing( gpointer data ) {
 	return TRUE;
