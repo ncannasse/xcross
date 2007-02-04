@@ -34,17 +34,12 @@ extern void std_main();
 extern void regexp_main();
 extern void zlib_main();
 
-static void printer( const char *data, int size, void *param ) {
-	sys_dialog("Print",data,0);
-}
-
 void neko_installer_init() {
 	sys_init();
 	std_main();
 	regexp_main();
 	zlib_main();
 	id_primitives = val_id("primitives");
-	neko_vm_redirect(neko_vm_current(),printer,NULL);
 }
 
 void neko_installer_error( const char *error ) {
