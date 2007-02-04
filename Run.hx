@@ -98,10 +98,30 @@ class Run {
 		f.close();
 	}
 
+	static function setConsoleMode( exe, console ) {
+		var f = neko.io.File.read(exe,true);
+		f.seek(0x3C,SeekBegin);
+		var pe_pos = f.readUInt16();
+		f.seek(pe_pos,SeekBegin);
+		if( f.read(2) != "PE" )
+			throw "Invalid PE header";
+		f.seek(0,SeekBegin);
+		var begin = f.read(pe_pos + 0x5C);
+		f.readChar();
+		var end = f.readAll();
+		f.close();
+		var f = neko.io.File.write(exe,true);
+		f.write(begin);
+		f.writeChar(if( console ) 0x03 else 0x02);
+		f.write(end);
+		f.close();
+	}
+
 	static function main() {
 		var args = neko.Sys.args();
 		var forwin = true, forosx = true, forlinux = true;
 		var execute = false;
+		var console_mode = false;
 		var bundle_name = null;
 		while( true ) {
 			var a = args.shift();
@@ -116,6 +136,8 @@ class Run {
 				forlinux = false;
 			case "-bundle":
 				bundle_name = args.shift();
+			case "-console":
+				console_mode = true;
 			case "-linux":
 				forwin = false;
 				forosx = false;
@@ -150,6 +172,8 @@ class Run {
 			if( forosx ) neko.Sys.command("chmod +x "+exe_osx);
 			if( forlinux ) neko.Sys.command("chmod +x "+exe_linux);
 		}
+		if( forwin && console_mode )
+			setConsoleMode(exe_win,true);
 		if( forosx && bundle_name != null )
 			createBundle(bundle_name,exe_osx);
 		if( execute ) {
