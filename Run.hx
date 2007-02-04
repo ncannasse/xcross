@@ -14,6 +14,7 @@
 /* Lesser General Public License or the LICENSE file for more details.		*/
 /*																			*/
 /* ************************************************************************ */
+import neko.io.File.FileSeek;
 
 class Run {
 
