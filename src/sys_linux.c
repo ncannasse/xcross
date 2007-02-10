@@ -37,6 +37,10 @@ void sys_init() {
 	main_thread_id = pthread_self();
 }
 
+int sys_is_main_thread() {
+	return pthread_self() == main_thread_id;
+}
+
 void sys_loop() {
 	gtk_main();
 }

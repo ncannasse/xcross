@@ -50,6 +50,10 @@ void sys_init() {
 	main_thread_id =  pthread_self();
 }
 
+int sys_is_main_thread() {
+	return pthread_self() == main_thread_id;
+}
+
 void sys_loop() {
 	RunApplicationEventLoop();
 }
@@ -146,7 +150,7 @@ void *sys_winlog_new( const char *title, sys_callback cb, void *param ) {
 
 	// button
 	CreatePushButtonControl(w->wnd,&br,CFSTR(""),&w->button);
-	
+
 	// events
 	INSTALL_HANDLER(w->wnd, kEventClassWindow, kEventWindowClose, onClose, w);
 	INSTALL_HANDLER(w->wnd, kEventClassControl, kEventControlHit, onHit, w);
@@ -165,11 +169,11 @@ void sys_winlog_set( void *_w, const char *txt ) {
 	CFStringRef str = CFStringCreateWithCString(NULL,txt,kCFStringEncodingUTF8);
 	SetControlData(w->text,kControlEntireControl,kSetText,sizeof(str),&str);
 	CFRelease(str);
-	Boolean max = !HIScrollViewCanNavigate(w->scroll,kHIScrollViewScrollToBottom);	
+	Boolean max = !HIScrollViewCanNavigate(w->scroll,kHIScrollViewScrollToBottom);
 	HIViewRemoveFromSuperview(w->text);
 	HIViewAddSubview(w->scroll,w->text);
 	if( max )
-		HIScrollViewNavigate(w->scroll,kHIScrollViewScrollToBottom);	
+		HIScrollViewNavigate(w->scroll,kHIScrollViewScrollToBottom);
 }
 
 void sys_winlog_set_button( void *_w, const char *txt, int enabled ) {
