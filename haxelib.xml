@@ -1,5 +1,5 @@
 <project name="xcross" url="http://code.google.com/p/xcross" license="GPL">
     <user name="ncannasse"/>
     <description>xCross is a package to cross-build zero-depencency haXe applications</description>
-    <version name="1.0">Include Winlog, ready for installer</version>
+    <version name="1.01">Fixed multithreading issues</version>
 </project>
