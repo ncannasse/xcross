@@ -193,4 +193,31 @@ void sys_winlog_destroy( void *_w ) {
 	free(w);
 }
 
+#include <Security/Authorization.h>
+#include <Security/AuthorizationTags.h>
+#include <sys/param.h>
+#include <mach-o/dyld.h>
+
+int sys_authorize() {
+	AuthorizationItem it = { kAuthorizationRightExecute, 0, NULL, 0 };
+        AuthorizationRights r = { 1, &it };
+        AuthorizationRef a;
+        if( AuthorizationCreate(&r,NULL,
+		kAuthorizationFlagDefaults |
+                kAuthorizationFlagExtendRights |
+                kAuthorizationFlagInteractionAllowed |
+                kAuthorizationFlagPreAuthorize
+         ,&a) != errAuthorizationSuccess )
+               return 0;
+	char path[MAXPATHLEN];
+	char *args[] = { NULL };
+	uint32_t path_len = MAXPATHLEN;
+	_NSGetExecutablePath(path,&path_len);
+	if( AuthorizationExecuteWithPrivileges(a,path,kAuthorizationFlagDefaults,args,NULL) != errAuthorizationSuccess ) {
+		AuthorizationFree(a,kAuthorizationFlagDefaults);
+		return 0;
+	}
+	return 1;
+}
+
 /* ************************************************************************ */

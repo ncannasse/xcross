@@ -62,12 +62,16 @@ class Api {
 		return r;
 	}
 
+	public static function authorize() : Bool {
+		return os_authorize();
+	}
+
 	static var os_is_main_thread = neko.Lib.load("xcross","os_is_main_thread",0);
 	static var os_dialog : Void -> Void -> Bool -> Bool -> Bool = neko.Lib.load("xcross","os_dialog",4);
 	static var os_loop = neko.Lib.load("xcross","os_loop",0);
 	static var os_stop = neko.Lib.load("xcross","os_stop",0);
 	static var os_sync = neko.Lib.load("xcross","os_sync",1);
-
+	static var os_authorize = neko.Lib.load("xcross","os_authorize",0);
 }
 
 /* ************************************************************************ */

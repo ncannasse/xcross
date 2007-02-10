@@ -225,5 +225,6 @@ PRIM(xcross,os_winlog_new,2);
 PRIM(xcross,os_winlog_set,2);
 PRIM(xcross,os_winlog_set_button,3);
 PRIM(xcross,os_winlog_destroy,1);
+PRIM(xcross,os_authorize,0);
 
 /* ************************************************************************ */

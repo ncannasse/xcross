@@ -113,6 +113,16 @@ static value os_winlog_destroy( value wnd ) {
 	return val_null;
 }
 
+extern int sys_authorize();
+
+static value os_authorize() {
+#	ifdef NEKO_MAC
+	return alloc_bool(sys_authorize());
+#	else
+	return val_false;
+#	endif
+}
+
 DEFINE_PRIM(os_is_main_thread,0);
 DEFINE_PRIM(os_dialog,4);
 DEFINE_PRIM(os_loop,0);
@@ -122,5 +132,6 @@ DEFINE_PRIM(os_winlog_new,2);
 DEFINE_PRIM(os_winlog_set,2);
 DEFINE_PRIM(os_winlog_set_button,3);
 DEFINE_PRIM(os_winlog_destroy,1);
+DEFINE_PRIM(os_authorize,0);
 
 /* ************************************************************************ */
