@@ -8,7 +8,7 @@ class Test {
 		try {
 			while( true ) {
 				s += Std.string(i++);
-				xcross.Api.sync(callback(w.log,s));
+				w.log(s);
 				if( Std.random(10) == 0 )
 					w.enabled = !w.enabled;
 				neko.Sys.sleep(0.5);
