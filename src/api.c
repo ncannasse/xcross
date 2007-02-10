@@ -40,7 +40,13 @@ static value os_dialog( value title, value msg, value error, value confirm ) {
 	return alloc_bool(r);
 }
 
+static value os_is_main_thread() {
+	return alloc_bool(sys_is_main_thread());
+}
+
 static value os_loop() {
+	if( !sys_is_main_thread() )
+		neko_error();
 	sys_loop();
 	return val_null;
 }
@@ -107,6 +113,7 @@ static value os_winlog_destroy( value wnd ) {
 	return val_null;
 }
 
+DEFINE_PRIM(os_is_main_thread,0);
 DEFINE_PRIM(os_dialog,4);
 DEFINE_PRIM(os_loop,0);
 DEFINE_PRIM(os_sync,1);

@@ -9,7 +9,7 @@ class Winlog {
 
 	public function new( title : String ) {
 		var me = this;
-		w = winlog_new(untyped title.__s,function() { me.onClick(); });
+		w = Api.syncLock(callback(winlog_new,untyped title.__s,function() { me.onClick(); }));
 		text = "";
 		button = "";
 		enabled = false;
@@ -30,30 +30,30 @@ class Winlog {
 	}
 
 	public function destroy() {
-		winlog_destroy(w);
+		Api.syncLock(callback(winlog_destroy,w));
 	}
 
 	function setText(t) {
 		text = t;
-		winlog_set(w,untyped t.__s);
+		Api.syncLock(callback(winlog_set,w,untyped t.__s));
 		return t;
 	}
 
 	function setButton(t) {
 		button = t;
-		winlog_set_button(w,untyped t.__s,if( enabled == null ) false else enabled);
+		Api.syncLock(callback(winlog_set_button,w,untyped t.__s,if( enabled == null ) false else enabled));
 		return t;
 	}
 
 	function setEnabled(e) {
 		enabled = e;
-		winlog_set_button(w,untyped button.__s,e);
+		Api.syncLock(callback(winlog_set_button,w,untyped button.__s,e));
 		return e;
 	}
 
-	static var winlog_new = neko.Lib.load("xcross","os_winlog_new",2);
-	static var winlog_set = neko.Lib.load("xcross","os_winlog_set",2);
-	static var winlog_set_button = neko.Lib.load("xcross","os_winlog_set_button",3);
-	static var winlog_destroy = neko.Lib.load("xcross","os_winlog_destroy",1);
+	static var winlog_new : Void -> (Void -> Void) -> Void = neko.Lib.load("xcross","os_winlog_new",2);
+	static var winlog_set : Void -> Void -> Void = neko.Lib.load("xcross","os_winlog_set",2);
+	static var winlog_set_button : Void -> Void -> Bool -> Void = neko.Lib.load("xcross","os_winlog_set_button",3);
+	static var winlog_destroy : (Void) -> Void = neko.Lib.load("xcross","os_winlog_destroy",1);
 
 }

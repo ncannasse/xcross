@@ -59,14 +59,16 @@ void sys_init() {
 	LoadLibrary("RICHED32.DLL");
 }
 
+int sys_is_main_thread() {
+	return GetCurrentThreadId() == main_thread_id;
+}
+
 int sys_dialog( const char *title, const char *message, int flags ) {
 	return MessageBox(NULL,message,title,((flags & DLG_CONFIRM)?MB_YESNO:MB_OK) | ((flags & DLG_ERROR)?MB_ICONERROR:MB_ICONINFORMATION) ) == IDYES;
 }
 
 void sys_loop() {
 	MSG msg;
-	if( GetCurrentThreadId() != main_thread_id )
-		return;
 	while( GetMessage(&msg,NULL,0,0) ) {
 		if( msg.message == WM_SYNC_CALL ) {
 			((sys_callback)msg.wParam)((void*)msg.lParam);

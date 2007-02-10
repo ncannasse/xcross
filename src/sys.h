@@ -24,6 +24,7 @@ void sys_init();
 void sys_loop();
 void sys_stop();
 void sys_sync( sys_callback cb, void *param );
+int sys_is_main_thread();
 int sys_dialog( const char *title, const char *message, int flags );
 
 void *sys_winlog_new( const char *title, sys_callback cb, void *param );

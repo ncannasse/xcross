@@ -216,6 +216,7 @@ PRIM(zlib,update_adler32,4);
 PRIM(zlib,update_crc32,4);
 PRIM(zlib,deflate_bound,2);
 
+PRIM(xcross,os_is_main_thread,0);
 PRIM(xcross,os_dialog,4);
 PRIM(xcross,os_loop,0);
 PRIM(xcross,os_stop,0);

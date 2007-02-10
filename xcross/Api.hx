@@ -19,15 +19,15 @@ package xcross;
 class Api {
 
 	public static function message( title : String, message : String ) {
-		untyped os_dialog(title.__s,message.__s,false,false);
+		syncLock(callback(os_dialog,untyped title.__s,untyped message.__s,false,false));
 	}
 
 	public static function error( title : String, message : String ) {
-		untyped os_dialog(title.__s,message.__s,true,false);
+		syncLock(callback(os_dialog,untyped title.__s,untyped message.__s,true,false));
 	}
 
 	public static function confirm( title : String, message : String ) : Bool {
-		return untyped os_dialog(title.__s,message.__s,false,true);
+		return syncLock(callback(os_dialog,untyped title.__s,untyped message.__s,false,true));
 	}
 
 	public static function loop() {
@@ -42,7 +42,28 @@ class Api {
 		os_sync(f);
 	}
 
-	static var os_dialog = neko.Lib.load("xcross","os_dialog",4);
+	public static function syncLock<T>( f : Void -> T ) : T {
+		if( os_is_main_thread() )
+			return f();
+		var l = new neko.vm.Lock();
+		var r;
+		var exc = null;
+		os_sync(function() {
+			try {
+				r = f();
+			} catch( e : Dynamic ) {
+				exc = { v : e };
+			}
+			l.release();
+		});
+		l.wait();
+		if( exc != null )
+			throw exc.v;
+		return r;
+	}
+
+	static var os_is_main_thread = neko.Lib.load("xcross","os_is_main_thread",0);
+	static var os_dialog : Void -> Void -> Bool -> Bool -> Bool = neko.Lib.load("xcross","os_dialog",4);
 	static var os_loop = neko.Lib.load("xcross","os_loop",0);
 	static var os_stop = neko.Lib.load("xcross","os_stop",0);
 	static var os_sync = neko.Lib.load("xcross","os_sync",1);
