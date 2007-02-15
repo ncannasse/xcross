@@ -23,7 +23,6 @@ ${XCROSS_OS}: ${XCROSS_TARGET}
 ${XCROSS_TARGET}: ${XCROSS_OBJECTS}
 	${CC} ${CFLAGS} ${EXTFLAGS} ${XCROSS_FLAGS} -o $@ ${XCROSS_OBJECTS} ${XCROSS_LIBS}
 	strip $@
-	-upx -9 $@
 
 xcross_clean:
 	rm -rf ${XCROSS_TARGET} ${XCROSS_OBJECTS}
