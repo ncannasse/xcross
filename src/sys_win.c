@@ -23,9 +23,17 @@
 #define PBUTTON			"_button"
 #define PCALLBACK		"_callb"
 #define PPARAM			"_param"
-#define	WM_SYNC_CALL	(WM_USER + 1)
+#define	WM_SYNC_CALL	(WM_USER + 100)
 
+typedef struct _queue {
+	sys_callback f;
+	void *param;
+	struct _queue *next;
+} mqueue;
+
+static mqueue *main_queue = NULL;
 static DWORD main_thread_id = 0;
+static CRITICAL_SECTION main_lock;
 
 static LRESULT CALLBACK WindowProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
 	switch( msg ) {
@@ -56,6 +64,7 @@ void sys_init() {
 	wcl.hIconSm			= 0;
 	RegisterClassEx(&wcl);
 	main_thread_id = GetCurrentThreadId();
+	InitializeCriticalSection(&main_lock);
 	LoadLibrary("RICHED32.DLL");
 }
 
@@ -70,10 +79,21 @@ int sys_dialog( const char *title, const char *message, int flags ) {
 void sys_loop() {
 	MSG msg;
 	while( GetMessage(&msg,NULL,0,0) ) {
-		if( msg.message == WM_SYNC_CALL ) {
-			((sys_callback)msg.wParam)((void*)msg.lParam);
-			continue;
+		while( main_queue ) {
+			mqueue m;
+			EnterCriticalSection(&main_lock);
+			if( main_queue == NULL ) {
+				LeaveCriticalSection(&main_lock);
+				break;
+			}
+			m = *main_queue;
+			free(main_queue);
+			main_queue = m.next;
+			LeaveCriticalSection(&main_lock);
+			m.f(m.param);
 		}
+		if( msg.message == WM_SYNC_CALL )
+			continue;
 		TranslateMessage(&msg);
 		DispatchMessage(&msg);
 		if( msg.message == WM_QUIT )
@@ -86,7 +106,14 @@ void sys_stop() {
 }
 
 void sys_sync( sys_callback f, void *param ) {
-	PostThreadMessage(main_thread_id,WM_SYNC_CALL,(WPARAM)f,(LPARAM)param);
+	mqueue *m = malloc(sizeof(mqueue));
+	m->f = f;
+	m->param = param;
+	EnterCriticalSection(&main_lock);
+	m->next = main_queue;
+	main_queue = m;
+	LeaveCriticalSection(&main_lock);
+	PostThreadMessage(main_thread_id,WM_SYNC_CALL,0,0);
 }
 
 void *sys_winlog_new( const char *title, sys_callback callb, void *param ) {
