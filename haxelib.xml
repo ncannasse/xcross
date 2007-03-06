@@ -1,5 +1,5 @@
 <project name="xcross" url="http://code.google.com/p/xcross" license="GPL">
     <user name="ncannasse"/>
     <description>xCross is a package to cross-build zero-depencency haXe applications</description>
-    <version name="1.02">Fixed glibc issue, upx for linux and osx</version>
+    <version name="1.03">Fixed lost messages on windows</version>
 </project>
