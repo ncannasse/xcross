@@ -31,7 +31,7 @@ typedef struct _queue {
 	struct _queue *next;
 } mqueue;
 
-static mqueue *main_queue = NULL;
+static mqueue *main_queue = NULL, *main_head = NULL;
 static DWORD main_thread_id = 0;
 static CRITICAL_SECTION main_lock;
 
@@ -79,16 +79,18 @@ int sys_dialog( const char *title, const char *message, int flags ) {
 void sys_loop() {
 	MSG msg;
 	while( GetMessage(&msg,NULL,0,0) ) {
-		while( main_queue ) {
+		while( main_head ) {
 			mqueue m;
 			EnterCriticalSection(&main_lock);
-			if( main_queue == NULL ) {
+			if( main_head == NULL ) {
 				LeaveCriticalSection(&main_lock);
 				break;
 			}
-			m = *main_queue;
-			free(main_queue);
-			main_queue = m.next;
+			m = *main_head;
+			free(main_head);
+			main_head = m.next;
+			if( main_head == NULL )
+				main_queue = NULL;
 			LeaveCriticalSection(&main_lock);
 			m.f(m.param);
 		}
@@ -109,15 +111,19 @@ void sys_sync( sys_callback f, void *param ) {
 	mqueue *m = malloc(sizeof(mqueue));
 	m->f = f;
 	m->param = param;
+	m->next = NULL;
 	EnterCriticalSection(&main_lock);
-	m->next = main_queue;
+	if( main_queue == NULL )
+		main_head = m;
+	else
+		main_queue->next = m;
 	main_queue = m;
 	LeaveCriticalSection(&main_lock);
 	PostThreadMessage(main_thread_id,WM_SYNC_CALL,0,0);
 }
 
 void *sys_winlog_new( const char *title, sys_callback callb, void *param ) {
-	HWND wnd, text, but; 
+	HWND wnd, text, but;
 	RECT rc;
 	RECT dtop;
 	DWORD style = WS_SYSMENU | WS_OVERLAPPED | WS_CAPTION;
@@ -128,7 +134,7 @@ void *sys_winlog_new( const char *title, sys_callback callb, void *param ) {
 	rc.left = 0;
 	rc.right = width;
 	rc.top = 0;
-	rc.bottom = height;	
+	rc.bottom = height;
 	AdjustWindowRectEx(&rc, style, FALSE, exstyle);
 	GetWindowRect(GetDesktopWindow(),&dtop);
 	// WINDOW
@@ -185,7 +191,7 @@ void sys_winlog_set( void *wnd, const char *txt ) {
 	SCROLLINFO sinf;
 	POINT pt;
 	sinf.cbSize = sizeof(sinf);
-	sinf.fMask = SIF_RANGE | SIF_POS | SIF_PAGE;	
+	sinf.fMask = SIF_RANGE | SIF_POS | SIF_PAGE;
 	GetScrollInfo(text,SB_VERT,&sinf);
 	SendMessage(text,EM_GETSCROLLPOS,0,(LPARAM)&pt);
 	SendMessage(text,EM_GETSEL,(WPARAM)&a,(LPARAM)&b);
@@ -194,7 +200,7 @@ void sys_winlog_set( void *wnd, const char *txt ) {
 	if( sinf.nPos + sinf.nPage == sinf.nMax || sinf.nMax == 1 ) {
 		GetScrollInfo(text,SB_VERT,&sinf);
 		pt.y = sinf.nMax - sinf.nPage;
-	}	
+	}
 	SendMessage(text,EM_SETSCROLLPOS,0,(LPARAM)&pt);
 }
 
