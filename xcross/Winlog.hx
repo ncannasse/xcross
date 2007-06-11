@@ -1,4 +1,5 @@
 package xcross;
+import neko.vm.Os;
 
 class Winlog {
 
@@ -9,7 +10,7 @@ class Winlog {
 
 	public function new( title : String ) {
 		var me = this;
-		w = Api.syncLock(callback(winlog_new,untyped title.__s,function() { me.onClick(); }));
+		w = Os.syncResult(callback(winlog_new,untyped title.__s,function() { me.onClick(); }));
 		text = "";
 		button = "";
 		enabled = false;
@@ -30,24 +31,24 @@ class Winlog {
 	}
 
 	public function destroy() {
-		Api.syncLock(callback(winlog_destroy,w));
+		Os.syncResult(callback(winlog_destroy,w));
 	}
 
 	function setText(t) {
 		text = t;
-		Api.syncLock(callback(winlog_set,w,untyped t.__s));
+		Os.syncResult(callback(winlog_set,w,untyped t.__s));
 		return t;
 	}
 
 	function setButton(t) {
 		button = t;
-		Api.syncLock(callback(winlog_set_button,w,untyped t.__s,if( enabled == null ) false else enabled));
+		Os.syncResult(callback(winlog_set_button,w,untyped t.__s,if( enabled == null ) false else enabled));
 		return t;
 	}
 
 	function setEnabled(e) {
 		enabled = e;
-		Api.syncLock(callback(winlog_set_button,w,untyped button.__s,e));
+		Os.syncResult(callback(winlog_set_button,w,untyped button.__s,e));
 		return e;
 	}
 

@@ -33,12 +33,14 @@ static value init_primitives() {
 extern void std_main();
 extern void regexp_main();
 extern void zlib_main();
+extern void os_main();
 
 void neko_installer_init() {
 	sys_init();
 	std_main();
 	regexp_main();
 	zlib_main();
+	os_main();
 	id_primitives = val_id("primitives");
 }
 

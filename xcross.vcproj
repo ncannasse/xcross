@@ -96,7 +96,8 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				CommandLine="copy release\xcross.exe bin\xcross-win
-upx -9 bin\xcross-win"/>
+upx -9 bin\xcross-win
+"/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
 			<Tool
@@ -290,6 +291,13 @@ upx -9 bin\xcross-win"/>
 					RelativePath="..\include\pcre\study.c">
 				</File>
 			</Filter>
+		</Filter>
+		<Filter
+			Name="OS"
+			Filter="">
+			<File
+				RelativePath="..\os\os.c">
+			</File>
 		</Filter>
 		<File
 			RelativePath=".\src\api.c">

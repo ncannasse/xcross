@@ -23,17 +23,6 @@
 #define PBUTTON			"_button"
 #define PCALLBACK		"_callb"
 #define PPARAM			"_param"
-#define	WM_SYNC_CALL	(WM_USER + 100)
-
-typedef struct _queue {
-	sys_callback f;
-	void *param;
-	struct _queue *next;
-} mqueue;
-
-static mqueue *main_queue = NULL, *main_head = NULL;
-static DWORD main_thread_id = 0;
-static CRITICAL_SECTION main_lock;
 
 static LRESULT CALLBACK WindowProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
 	switch( msg ) {
@@ -63,63 +52,11 @@ void sys_init() {
 	wcl.lpszClassName	= CLASS_NAME;
 	wcl.hIconSm			= 0;
 	RegisterClassEx(&wcl);
-	main_thread_id = GetCurrentThreadId();
-	InitializeCriticalSection(&main_lock);
 	LoadLibrary("RICHED32.DLL");
-}
-
-int sys_is_main_thread() {
-	return GetCurrentThreadId() == main_thread_id;
 }
 
 int sys_dialog( const char *title, const char *message, int flags ) {
 	return MessageBox(NULL,message,title,((flags & DLG_CONFIRM)?MB_YESNO:MB_OK) | ((flags & DLG_ERROR)?MB_ICONERROR:MB_ICONINFORMATION) ) == IDYES;
-}
-
-void sys_loop() {
-	MSG msg;
-	while( GetMessage(&msg,NULL,0,0) ) {
-		while( main_head ) {
-			mqueue m;
-			EnterCriticalSection(&main_lock);
-			if( main_head == NULL ) {
-				LeaveCriticalSection(&main_lock);
-				break;
-			}
-			m = *main_head;
-			free(main_head);
-			main_head = m.next;
-			if( main_head == NULL )
-				main_queue = NULL;
-			LeaveCriticalSection(&main_lock);
-			m.f(m.param);
-		}
-		if( msg.message == WM_SYNC_CALL )
-			continue;
-		TranslateMessage(&msg);
-		DispatchMessage(&msg);
-		if( msg.message == WM_QUIT )
-			break;
-	}
-}
-
-void sys_stop() {
-	PostThreadMessage(main_thread_id,WM_QUIT,0,0);
-}
-
-void sys_sync( sys_callback f, void *param ) {
-	mqueue *m = malloc(sizeof(mqueue));
-	m->f = f;
-	m->param = param;
-	m->next = NULL;
-	EnterCriticalSection(&main_lock);
-	if( main_queue == NULL )
-		main_head = m;
-	else
-		main_queue->next = m;
-	main_queue = m;
-	LeaveCriticalSection(&main_lock);
-	PostThreadMessage(main_thread_id,WM_SYNC_CALL,0,0);
 }
 
 void *sys_winlog_new( const char *title, sys_callback callb, void *param ) {

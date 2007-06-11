@@ -15,63 +15,29 @@
 /*																			*/
 /* ************************************************************************ */
 package xcross;
+import neko.vm.Os;
 
 class Api {
 
 	public static function message( title : String, message : String ) {
-		syncLock(callback(os_dialog,untyped title.__s,untyped message.__s,false,false));
+		Os.syncResult(callback(os_dialog,untyped title.__s,untyped message.__s,false,false));
 	}
 
 	public static function error( title : String, message : String ) {
-		syncLock(callback(os_dialog,untyped title.__s,untyped message.__s,true,false));
+		Os.syncResult(callback(os_dialog,untyped title.__s,untyped message.__s,true,false));
 	}
 
 	public static function confirm( title : String, message : String ) : Bool {
-		return syncLock(callback(os_dialog,untyped title.__s,untyped message.__s,false,true));
-	}
-
-	public static function loop() {
-		os_loop();
-	}
-
-	public static function stop() {
-		os_stop();
-	}
-
-	public static function sync( f : Void -> Void ) {
-		os_sync(f);
-	}
-
-	public static function syncLock<T>( f : Void -> T ) : T {
-		if( os_is_main_thread() )
-			return f();
-		var l = new neko.vm.Lock();
-		var r;
-		var exc = null;
-		os_sync(function() {
-			try {
-				r = f();
-			} catch( e : Dynamic ) {
-				exc = { v : e };
-			}
-			l.release();
-		});
-		l.wait();
-		if( exc != null )
-			throw exc.v;
-		return r;
+		return Os.syncResult(callback(os_dialog,untyped title.__s,untyped message.__s,false,true));
 	}
 
 	public static function authorize() : Bool {
 		return os_authorize();
 	}
 
-	static var os_is_main_thread = neko.Lib.load("xcross","os_is_main_thread",0);
 	static var os_dialog : Void -> Void -> Bool -> Bool -> Bool = neko.Lib.load("xcross","os_dialog",4);
-	static var os_loop = neko.Lib.load("xcross","os_loop",0);
-	static var os_stop = neko.Lib.load("xcross","os_stop",0);
-	static var os_sync = neko.Lib.load("xcross","os_sync",1);
 	static var os_authorize = neko.Lib.load("xcross","os_authorize",0);
+
 }
 
 /* ************************************************************************ */

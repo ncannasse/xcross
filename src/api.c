@@ -40,43 +40,10 @@ static value os_dialog( value title, value msg, value error, value confirm ) {
 	return alloc_bool(r);
 }
 
-static value os_is_main_thread() {
-	return alloc_bool(sys_is_main_thread());
-}
-
-static value os_loop() {
-	if( !sys_is_main_thread() )
-		neko_error();
-	sys_loop();
-	return val_null;
-}
-
-static value os_stop() {
-	sys_stop();
-	return val_null;
-}
-
-static void *sync_callback( void *_r ) {
-	value *r = (value*)_r;
-	value f = *r;
-	free_root(r);
-	val_call0(f);
-	return NULL;	
-}
-
 static void *wnd_callback( void *_w ) {
 	window *w = (window*)_w;
 	val_call0(w->click);
 	return NULL;
-}
-
-static value os_sync( value f ) {
-	value *r;
-	val_check_function(f,0);
-	r = alloc_root(1);
-	*r = f;
-	sys_sync(sync_callback,r);
-	return val_null;
 }
 
 static value os_winlog_new( value title, value f ) {
@@ -123,11 +90,7 @@ static value os_authorize() {
 #	endif
 }
 
-DEFINE_PRIM(os_is_main_thread,0);
 DEFINE_PRIM(os_dialog,4);
-DEFINE_PRIM(os_loop,0);
-DEFINE_PRIM(os_sync,1);
-DEFINE_PRIM(os_stop,0);
 DEFINE_PRIM(os_winlog_new,2);
 DEFINE_PRIM(os_winlog_set,2);
 DEFINE_PRIM(os_winlog_set_button,3);
