@@ -21,47 +21,7 @@
 #include <locale.h>
 #include "sys.h"
 
-static pthread_t main_thread_id;
-
-static gint nothing( gpointer data ) {
-	return TRUE;
-}
-
 void sys_init() {
-	XInitThreads();
-	gtk_init(NULL,NULL);
-	// keep the loop alive
-	gtk_timeout_add( 100, nothing, NULL );
-	// prevent atof() from being broken !
-	setlocale(LC_NUMERIC,"POSIX");
-	main_thread_id = pthread_self();
-}
-
-int sys_is_main_thread() {
-	return pthread_self() == main_thread_id;
-}
-
-void sys_loop() {
-	gtk_main();
-}
-
-void sys_stop() {
-	gtk_main_quit();
-}
-
-typedef struct {
-	sys_callback callback;
-	void *param;
-} sig_data;
-
-static gint gtk_event( GtkWidget *_, sig_data *_d ) {
-	sig_data *d = (sig_data*)_d;
-	d->callback( d->param );
-	return 0;
-}
-
-void sys_sync( sys_callback cb, void *param ) {
-	gtk_idle_add( (GtkFunction)cb, (gpointer)param );
 }
 
 int sys_dialog( const char *title, const char *message, int flags ) {

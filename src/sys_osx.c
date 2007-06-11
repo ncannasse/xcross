@@ -19,56 +19,7 @@
 #include "res/HIScrollingTextBox.c"
 #include "sys.h"
 
-#define xCrossEvent	0xFFFFAA00
-#define eCall		0x0
-
-enum {
-	pFunc = 'func',
-	pParam = 'pram',
-};
-
-static pthread_t main_thread_id;
-
-static OSStatus handleEvents( EventHandlerCallRef ref, EventRef e, void *data ) {
-	switch( GetEventKind(e) ) {
-	case eCall: {
-		sys_callback cb;
-		void *param;
-		GetEventParameter(e,pFunc,typeVoidPtr,0,sizeof(void*),0,&cb);
-		GetEventParameter(e,pParam,typeVoidPtr,0,sizeof(void*),0,&param);
-		cb(param);
-		break; }
-	}
-	return 0;
-}
-
 void sys_init() {
-	EventTypeSpec ets[] = {
-		{ xCrossEvent, eCall }
-	};
-	InstallEventHandler(GetApplicationEventTarget(),NewEventHandlerUPP(handleEvents),sizeof(ets) / sizeof(EventTypeSpec),ets,0,0);
-	main_thread_id =  pthread_self();
-}
-
-int sys_is_main_thread() {
-	return pthread_self() == main_thread_id;
-}
-
-void sys_loop() {
-	RunApplicationEventLoop();
-}
-
-void sys_stop() {
-	QuitApplicationEventLoop();
-}
-
-void sys_sync( sys_callback cb, void *param ) {
-	EventRef e;
-	CreateEvent(NULL,xCrossEvent,eCall,GetCurrentEventTime(),kEventAttributeUserEvent,&e);
-	SetEventParameter(e,pFunc,typeVoidPtr,sizeof(void*),&cb);
-	SetEventParameter(e,pParam,typeVoidPtr,sizeof(void*),&param);
-	PostEventToQueue(GetMainEventQueue(),e,kEventPriorityStandard);
-	ReleaseEvent(e);
 }
 
 int sys_dialog( const char *title, const char *message, int flags ) {
