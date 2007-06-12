@@ -13,7 +13,7 @@ XCROSS_LIBS = ${UNIV}/libpcre.a ${UNIV}/libz.a ${UNIV}/libgc.a -framework Carbon
 endif
 
 SRC = libs/xcross/src
-_XCROSS_OBJECTS = ${SRC}/xcross.o ${SRC}/api.o ${SRC}/sys_${XCROSS_OS}.o libs/regexp/regexp.o libs/zlib/zlib.o ${STD_OBJECTS} ${LIBNEKO_OBJECTS} ${VM_OBJECTS}
+_XCROSS_OBJECTS = ${SRC}/xcross.o ${SRC}/api.o ${SRC}/sys_${XCROSS_OS}.o libs/regexp/regexp.o libs/zlib/zlib.o libs/ui/ui.o ${STD_OBJECTS} ${LIBNEKO_OBJECTS} ${VM_OBJECTS}
 
 XCROSS_OBJECTS = ${_XCROSS_OBJECTS:.o=.o2}
 XCROSS_TARGET = libs/xcross/bin/xcross-${XCROSS_OS}
