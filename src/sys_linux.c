@@ -40,6 +40,11 @@ int sys_dialog( const char *title, const char *message, int flags ) {
 }
 
 typedef struct {
+	sys_callback callback;
+	void *param;
+} sig_data;
+
+typedef struct {
 	GtkWidget *wnd;
 	GtkWidget *panel;
 	GtkWidget *button;
