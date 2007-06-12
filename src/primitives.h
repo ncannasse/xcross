@@ -216,10 +216,10 @@ PRIM(zlib,update_adler32,4);
 PRIM(zlib,update_crc32,4);
 PRIM(zlib,deflate_bound,2);
 
-PRIM(os,os_is_main,0);
-PRIM(os,os_loop,0);
-PRIM(os,os_stop_loop,0);
-PRIM(os,os_sync,1);
+PRIM(ui,ui_is_main,0);
+PRIM(ui,ui_loop,0);
+PRIM(ui,ui_stop_loop,0);
+PRIM(ui,ui_sync,1);
 
 PRIM(xcross,os_dialog,4);
 PRIM(xcross,os_winlog_new,2);

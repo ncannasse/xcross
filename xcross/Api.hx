@@ -15,20 +15,20 @@
 /*																			*/
 /* ************************************************************************ */
 package xcross;
-import neko.vm.Os;
+import neko.vm.Ui;
 
 class Api {
 
 	public static function message( title : String, message : String ) {
-		Os.syncResult(callback(os_dialog,untyped title.__s,untyped message.__s,false,false));
+		Ui.syncResult(callback(os_dialog,untyped title.__s,untyped message.__s,false,false));
 	}
 
 	public static function error( title : String, message : String ) {
-		Os.syncResult(callback(os_dialog,untyped title.__s,untyped message.__s,true,false));
+		Ui.syncResult(callback(os_dialog,untyped title.__s,untyped message.__s,true,false));
 	}
 
 	public static function confirm( title : String, message : String ) : Bool {
-		return Os.syncResult(callback(os_dialog,untyped title.__s,untyped message.__s,false,true));
+		return Ui.syncResult(callback(os_dialog,untyped title.__s,untyped message.__s,false,true));
 	}
 
 	public static function authorize() : Bool {

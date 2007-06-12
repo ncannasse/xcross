@@ -293,10 +293,10 @@ upx -9 bin\xcross-win
 			</Filter>
 		</Filter>
 		<Filter
-			Name="OS"
+			Name="UI"
 			Filter="">
 			<File
-				RelativePath="..\os\os.c">
+				RelativePath="..\ui\ui.c">
 			</File>
 		</Filter>
 		<File
