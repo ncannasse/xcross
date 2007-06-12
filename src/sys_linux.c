@@ -53,6 +53,10 @@ typedef struct {
 	sig_data click;
 } winlog;
 
+static gint gtk_event( GtkWidget *_, sig_data *d ) {
+	d->callback(d->param);
+	return 0;
+}
 
 static gboolean cancel_delete( GtkWidget *widget, GdkEvent  *event, gpointer data ) {
 	return TRUE;

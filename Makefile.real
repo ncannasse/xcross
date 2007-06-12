@@ -4,7 +4,7 @@ include Makefile
 
 XCROSS_OS = linux
 XCROSS_FLAGS = `pkg-config --cflags gtk+-2.0`
-XCROSS_LIBS = -lm -ldl /usr/lib/libgc.a /usr/lib/libpcre.a /usr/lib/libz.a `pkg-config --libs gtk+-2.0`
+XCROSS_LIBS = -lm -ldl /usr/lib/libgc.a /usr/lib/libpcre.a /usr/lib/libz.a `pkg-config --libs gtk+-2.0` -lgthread-2.0
 
 ifeq (${MACOSX}, 1)
 XCROSS_OS = osx
