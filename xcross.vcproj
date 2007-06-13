@@ -223,6 +223,9 @@ upx -9 bin\xcross-win
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath="..\std\process.c">
+			</File>
+			<File
 				RelativePath="..\std\random.c">
 			</File>
 			<File

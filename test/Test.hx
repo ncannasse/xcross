@@ -24,11 +24,11 @@ class Test {
 		w.enabled = true;
 		w.onClick = function() {
 			if( xcross.Api.confirm("Warning","Do you want to quit ?") )
-				xcross.Api.stop();
+				neko.vm.Ui.stopLoop();
 			else
 				xcross.Api.error("Error","Exit Canceled");
 		}
 		neko.vm.Thread.create(thread);
-		xcross.Api.loop();
+		neko.vm.Ui.loop();
 	}
 }

@@ -195,6 +195,13 @@ PRIM(std,enable_jit,1);
 PRIM(std,test,0);
 PRIM(std,print_redirect,1);
 
+PRIM(std,process_run,2);
+PRIM(std,process_stdout_read,4);
+PRIM(std,process_stderr_read,4);
+PRIM(std,process_stdin_close,1);
+PRIM(std,process_stdin_write,4);
+PRIM(std,process_exit,1);
+
 PRIM(regexp,regexp_new_options,2);
 PRIM(regexp,regexp_new,1);
 PRIM(regexp,regexp_match,4);
