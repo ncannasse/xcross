@@ -201,6 +201,7 @@ PRIM(std,process_stderr_read,4);
 PRIM(std,process_stdin_close,1);
 PRIM(std,process_stdin_write,4);
 PRIM(std,process_exit,1);
+PRIM(std,process_pid,1);
 
 PRIM(regexp,regexp_new_options,2);
 PRIM(regexp,regexp_new,1);
