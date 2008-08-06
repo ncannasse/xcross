@@ -4,7 +4,7 @@ include Makefile
 
 XCROSS_OS = linux
 XCROSS_FLAGS = `pkg-config --cflags gtk+-2.0`
-XCROSS_LIBS = -lm -ldl /usr/lib/libgc.a /usr/lib/libpcre.a /usr/lib/libz.a `pkg-config --libs gtk+-2.0` -lgthread-2.0
+XCROSS_LIBS = -lm -ldl /usr/lib/libgc.a /usr/lib/libpcre.a /usr/lib/libz.a `pkg-config --libs gtk+-2.0` -lgthread-2.0 -Wl,--export-dynamic
 
 ifeq (${MACOSX}, 1)
 XCROSS_OS = osx
@@ -22,13 +22,10 @@ ${XCROSS_OS}: ${XCROSS_TARGET}
 
 ${XCROSS_TARGET}: ${XCROSS_OBJECTS}
 	${CC} ${CFLAGS} ${EXTFLAGS} ${XCROSS_FLAGS} -o $@ ${XCROSS_OBJECTS} ${XCROSS_LIBS}
-	strip $@
 	-upx -9 ${XCROSS_TARGET}
 
 xcross_clean:
 	rm -rf ${XCROSS_TARGET} ${XCROSS_OBJECTS}
-
-${SRC}/xcross.o2: ${SRC}/primitives.h
 
 ${SRC}/api.o2: ${SRC}/sys.h
 
