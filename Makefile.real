@@ -39,5 +39,5 @@ ${SRC}/sys_osx.o2: ${SRC}/res/Utils.c ${SRC}/res/HIScrollingTextBox.c
 .SUFFIXES : .c .o2
 
 .c.o2:
-	${CC} ${CFLAGS} ${EXTFLAGS} ${XCROSS_FLAGS} -D NEKO_INSTALLER -o $@ -c $<
+	${CC} ${CFLAGS} ${EXTFLAGS} ${XCROSS_FLAGS} -D NEKO_STANDALONE -o $@ -c $<
 

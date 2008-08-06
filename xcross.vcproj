@@ -20,7 +20,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="../../vm;../include;../include/pcre;../include/zlib"
-				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;NEKO_INSTALLER"
+				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;NEKO_STANDALONE"
 				MinimalRebuild="TRUE"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -32,7 +32,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="../include/zlib/zlib.lib ../include/gc/gcstat.lib ws2_32.lib"
+				AdditionalDependencies="../include/zlib/zlib.lib ../include/gc/gc.lib ws2_32.lib"
 				OutputFile="$(OutDir)/xcross.exe"
 				LinkIncremental="2"
 				IgnoreDefaultLibraryNames="MSVCRT"
@@ -71,7 +71,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				AdditionalIncludeDirectories="../../vm;../include;../include/pcre;../include/zlib"
-				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;NEKO_INSTALLER"
+				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;NEKO_STANDALONE"
 				RuntimeLibrary="2"
 				BufferSecurityCheck="FALSE"
 				UsePrecompiledHeader="0"
@@ -82,7 +82,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="../include/zlib/zlib.lib ../include/gc/gcstat.lib ws2_32.lib msvcrt60.lib"
+				AdditionalDependencies="../include/zlib/zlib.lib ../include/gc/gc.lib ws2_32.lib msvcrt60.lib"
 				OutputFile="$(OutDir)/xcross.exe"
 				LinkIncremental="1"
 				IgnoreDefaultLibraryNames="MSVCRT"
@@ -130,12 +130,6 @@ upx -9 bin\xcross-win
 			</File>
 			<File
 				RelativePath="..\..\vm\callback.c">
-			</File>
-			<File
-				RelativePath="..\..\vm\context.c">
-			</File>
-			<File
-				RelativePath="..\..\vm\context.h">
 			</File>
 			<File
 				RelativePath="..\..\vm\hash.c">
@@ -361,9 +355,6 @@ upx -9 bin\xcross-win
 		</File>
 		<File
 			RelativePath="..\..\vm\main.c">
-		</File>
-		<File
-			RelativePath=".\src\primitives.h">
 		</File>
 		<File
 			RelativePath=".\src\sys.h">

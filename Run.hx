@@ -19,7 +19,7 @@ import neko.io.File.FileSeek;
 class Run {
 
 	static function build(file,content,os) {
-		var exe_content = neko.io.File.getContent("bin/xcross-"+os);
+		var exe_content = neko.io.File.getBytes("bin/xcross-"+os);
 		var p = new neko.io.Path(file);
 		if( os == "win" )
 			p.ext = "exe";
@@ -30,8 +30,8 @@ class Run {
 		var out = neko.io.File.write(exe_file,true);
 		out.write(exe_content);
 		out.write(content);
-		out.write("NEKO");
-		out.writeInt32(exe_content.length);
+		out.writeString("NEKO");
+		out.writeUInt30(exe_content.length);
 		out.close();
 		return exe_file;
 	}
@@ -81,7 +81,7 @@ class Run {
 		var f = neko.io.File.write(bundle_exe,true);
 		var content = neko.io.File.getContent(exe);
 		var sign = haxe.Md5.encode(content);
-		f.write(content);
+		f.writeString(content);
 		f.close();
 		neko.Sys.command('chmod +x "'+bundle_exe+'"');
 		var inf = new haxe.Template(bundle_xml).execute({
@@ -91,11 +91,11 @@ class Run {
 			version : "1.0",
 		});
 		var f = neko.io.File.write(dir+"/Contents/Info.plist",true);
-		f.write(inf);
+		f.writeString(inf);
 		f.close();
 		var f = neko.io.File.write(dir+"/Contents/PkgInfo",true);
-		f.write("APPL");
-		f.write(sign);
+		f.writeString("APPL");
+		f.writeString(sign);
 		f.close();
 	}
 
@@ -104,16 +104,16 @@ class Run {
 		f.seek(0x3C,SeekBegin);
 		var pe_pos = f.readUInt16();
 		f.seek(pe_pos,SeekBegin);
-		if( f.read(2) != "PE" )
+		if( f.readString(2) != "PE" )
 			throw "Invalid PE header";
 		f.seek(0,SeekBegin);
 		var begin = f.read(pe_pos + 0x5C);
-		f.readChar();
+		f.readByte();
 		var end = f.readAll();
 		f.close();
 		var f = neko.io.File.write(exe,true);
 		f.write(begin);
-		f.writeChar(if( console ) 0x03 else 0x02);
+		f.writeByte(if( console ) 0x03 else 0x02);
 		f.write(end);
 		f.close();
 	}
@@ -154,14 +154,14 @@ class Run {
 			neko.Sys.exit(1);
 		}
 		var content = try
-			neko.io.File.getContent(file)
+			neko.io.File.getBytes(file)
 		catch( e : Dynamic ) try {
 			file = args.pop()+file;
-			neko.io.File.getContent(file);
+			neko.io.File.getBytes(file);
 		} catch( e : Dynamic ) {
 			neko.Lib.print("Could not find file '"+file+"', please specify absolute path");
 			neko.Sys.exit(2);
-			"";
+			null;
 		}
 		var exe_win = if( forwin ) build(file,content,"win") else null;
 		var exe_osx = if( forosx ) build(file,content,"osx") else null;

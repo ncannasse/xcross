@@ -16,7 +16,7 @@ class Winlog {
 		enabled = false;
 	}
 
-	public function onClick() {
+	public dynamic function onClick() {
 	}
 
 	public function log( line : String ) {
