@@ -82,7 +82,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="../include/zlib/zlib.lib ../include/gc/gc.lib ws2_32.lib msvcrt60.lib"
+				AdditionalDependencies="../include/zlib/zlib.lib ../include/gc/gcstat.lib ws2_32.lib msvcrt60.lib"
 				OutputFile="$(OutDir)/xcross.exe"
 				LinkIncremental="1"
 				IgnoreDefaultLibraryNames="MSVCRT"
@@ -169,6 +169,9 @@ upx -9 bin\xcross-win
 			</File>
 			<File
 				RelativePath="..\..\vm\stats.c">
+			</File>
+			<File
+				RelativePath="..\..\vm\threads.c">
 			</File>
 			<File
 				RelativePath="..\..\vm\vm.h">
