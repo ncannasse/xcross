@@ -105,14 +105,7 @@ void *sys_winlog_new( const char *title, sys_callback cb, void *param ) {
 void sys_winlog_set( void *_wnd, const char *txt ) {
 	winlog *w = (winlog*)_wnd;
 	GtkTextBuffer *buf = gtk_text_view_get_buffer(GTK_TEXT_VIEW(w->text));
-	gdouble pos = w->bar->value;
-	int max = (pos + w->bar->page_size) == w->bar->upper;
 	gtk_text_buffer_set_text(buf,txt,-1);
-	while( gtk_events_pending() )
-		gtk_main_iteration();
-	if( max )
-		pos = w->bar->upper - w->bar->page_size;
-	gtk_adjustment_set_value(w->bar,pos);
 }
 
 void sys_winlog_set_button( void *_wnd, const char *txt, int enabled ) {
