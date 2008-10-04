@@ -1,5 +1,5 @@
 <project name="xcross" url="http://code.google.com/p/xcross" license="GPL">
     <user name="ncannasse"/>
     <description>xCross is a package to cross-build zero-depencency haXe applications</description>
-    <version name="1.04">Updated for Neko 1.7.0</version>
+    <version name="1.05">Updated for Neko 1.8.0</version>
 </project>
