@@ -1,13 +1,21 @@
 all:
 
-linux:
+linux: clean linux_ui clean2 linux_console
+
+linux_ui:
 	(cd ../.. && make -f libs/xcross/Makefile.real linux)
+
+linux_console:
+	(cd ../.. && make -f libs/xcross/Makefile.real CONSOLE_MODE=1 linux)
 
 osx:
 	(cd ../.. && make -f libs/xcross/Makefile.real MACOSX=1 OSX_UNIVERSAL=1 osx)
 
 clean:
 	(cd ../.. && make -f libs/xcross/Makefile.real xcross_clean)
+
+clean2:
+	(cd ../.. && make -f libs/xcross/Makefile.real CONSOLE_MODE=1 xcross_clean)
 
 release:
 	mkdir xcross-release

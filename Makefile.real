@@ -3,25 +3,38 @@
 include Makefile
 
 XCROSS_OS = linux
-XCROSS_FLAGS = `pkg-config --cflags gtk+-2.0`
-XCROSS_LIBS = -lm -ldl /usr/lib/libgc.a /usr/lib/libpcre.a /usr/lib/libz.a `pkg-config --libs gtk+-2.0` -lgthread-2.0 -Wl,--export-dynamic
+XCROSS_EXT =
+UI_FLAGS = `pkg-config --cflags gtk+-2.0`
+UI_LIBS = `pkg-config --libs gtk+-2.0` -lgthread-2.0
+XCROSS_FLAGS = 
+XCROSS_LIBS = -lm -ldl /usr/lib/libgc.a /usr/lib/libpcre.a /usr/lib/libz.a -Wl,--export-dynamic
 
 ifeq (${MACOSX}, 1)
+UI_FLAGS =
+UI_LIBS =
 XCROSS_OS = osx
 XCROSS_FLAGS = -I /opt/local/include -I /Developer/Headers/FlatCarbon
 XCROSS_LIBS = ${UNIV}/libpcre.a ${UNIV}/libz.a ${UNIV}/libgc.a -framework Carbon -framework Security
 endif
 
 SRC = libs/xcross/src
-_XCROSS_OBJECTS = ${SRC}/xcross.o ${SRC}/api.o ${SRC}/sys_${XCROSS_OS}.o libs/regexp/regexp.o libs/zlib/zlib.o libs/ui/ui.o ${STD_OBJECTS} ${LIBNEKO_OBJECTS} ${VM_OBJECTS}
+_XCROSS_OBJECTS = ${SRC}/xcross.o libs/regexp/regexp.o libs/zlib/zlib.o ${STD_OBJECTS} ${LIBNEKO_OBJECTS} ${VM_OBJECTS}
+UI_OBJECTS = ${SRC}/api.o ${SRC}/sys_${XCROSS_OS}.o libs/ui/ui.o
 
-XCROSS_OBJECTS = ${_XCROSS_OBJECTS:.o=.o2}
-XCROSS_TARGET = libs/xcross/bin/xcross-${XCROSS_OS}
+ifeq (${CONSOLE_MODE}, 1)
+UI_FLAGS = -D CONSOLE_MODE
+UI_LIBS =
+UI_OBJECTS =
+XCROSS_EXT = -console
+endif
+
+XCROSS_OBJECTS = ${_XCROSS_OBJECTS:.o=.o2} ${UI_OBJECTS:.o=.o2}
+XCROSS_TARGET = libs/xcross/bin/xcross-${XCROSS_OS}${XCROSS_EXT}
 
 ${XCROSS_OS}: ${XCROSS_TARGET}
 
 ${XCROSS_TARGET}: ${XCROSS_OBJECTS}
-	${CC} ${CFLAGS} ${EXTFLAGS} ${XCROSS_FLAGS} -o $@ ${XCROSS_OBJECTS} ${XCROSS_LIBS}
+	${CC} ${CFLAGS} ${EXTFLAGS} ${XCROSS_FLAGS} ${UI_FLAGS} -o $@ ${XCROSS_OBJECTS} ${XCROSS_LIBS} ${UI_LIBS}
 	-upx -9 ${XCROSS_TARGET}
 
 xcross_clean:
@@ -36,5 +49,5 @@ ${SRC}/sys_osx.o2: ${SRC}/res/Utils.c ${SRC}/res/HIScrollingTextBox.c
 .SUFFIXES : .c .o2
 
 .c.o2:
-	${CC} ${CFLAGS} ${EXTFLAGS} ${XCROSS_FLAGS} -D NEKO_STANDALONE -o $@ -c $<
+	${CC} ${CFLAGS} ${EXTFLAGS} ${XCROSS_FLAGS} ${UI_FLAGS} -D NEKO_STANDALONE -o $@ -c $<
 
