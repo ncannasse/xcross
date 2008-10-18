@@ -18,8 +18,8 @@ import neko.io.File.FileSeek;
 
 class Run {
 
-	static function build(file,content,os) {
-		var exe_content = neko.io.File.getBytes("bin/xcross-"+os);
+	static function build(file,content,os,console) {
+		var exe_content = neko.io.File.getBytes("bin/xcross-"+os+(console?"-console":""));
 		var p = new neko.io.Path(file);
 		if( os == "win" )
 			p.ext = "exe";
@@ -163,9 +163,9 @@ class Run {
 			neko.Sys.exit(2);
 			null;
 		}
-		var exe_win = if( forwin ) build(file,content,"win") else null;
-		var exe_osx = if( forosx ) build(file,content,"osx") else null;
-		var exe_linux = if( forlinux ) build(file,content,"linux") else null;
+		var exe_win = if( forwin ) build(file,content,"win",false) else null;
+		var exe_osx = if( forosx ) build(file,content,"osx",false) else null;
+		var exe_linux = if( forlinux ) build(file,content,"linux",console) else null;
 		var system = neko.Sys.systemName();
 		var win = (system == "Windows");
 		if( !win ) {
