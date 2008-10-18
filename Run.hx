@@ -165,7 +165,7 @@ class Run {
 		}
 		var exe_win = if( forwin ) build(file,content,"win",false) else null;
 		var exe_osx = if( forosx ) build(file,content,"osx",false) else null;
-		var exe_linux = if( forlinux ) build(file,content,"linux",console) else null;
+		var exe_linux = if( forlinux ) build(file,content,"linux",console_mode) else null;
 		var system = neko.Sys.systemName();
 		var win = (system == "Windows");
 		if( !win ) {
