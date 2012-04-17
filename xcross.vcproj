@@ -70,7 +70,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="2"
-				AdditionalIncludeDirectories="../../vm;../include;../include/pcre;../include/zlib"
+				AdditionalIncludeDirectories="../../vm;../include;../common;../include/pcre;../include/zlib"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;NEKO_STANDALONE"
 				RuntimeLibrary="2"
 				BufferSecurityCheck="FALSE"
@@ -230,6 +230,9 @@ upx -9 bin\xcross-win
 			</File>
 			<File
 				RelativePath="..\std\serialize.c">
+			</File>
+			<File
+				RelativePath="..\common\sha1.c">
 			</File>
 			<File
 				RelativePath="..\std\socket.c">
