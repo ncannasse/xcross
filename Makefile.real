@@ -7,7 +7,7 @@ XCROSS_EXT =
 UI_FLAGS = `pkg-config --cflags gtk+-2.0`
 UI_LIBS = `pkg-config --libs gtk+-2.0` -lgthread-2.0
 XCROSS_FLAGS = 
-XCROSS_LIBS = -lm -ldl /usr/lib/libgc.a /usr/lib/libpcre.a /usr/lib/libz.a -Wl,--export-dynamic
+XCROSS_LIBS = -lm -ldl -lrt /usr/lib/libgc.a /usr/lib/libpcre.a /usr/lib/libz.a -Wl,--export-dynamic
 
 ifeq (${MACOSX}, 1)
 UI_FLAGS =
