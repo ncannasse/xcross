@@ -14,20 +14,19 @@
 /* Lesser General Public License or the LICENSE file for more details.		*/
 /*																			*/
 /* ************************************************************************ */
-import neko.io.File.FileSeek;
 
 class Run {
 
 	static function build(file,content,os,console) {
-		var exe_content = neko.io.File.getBytes("bin/xcross-"+os+(console?"-console":""));
-		var p = new neko.io.Path(file);
+		var exe_content = sys.io.File.getBytes("bin/xcross-"+os+(console?"-console":""));
+		var p = new haxe.io.Path(file);
 		if( os == "win" )
 			p.ext = "exe";
 		else
 			p.ext = null;
 		p.file += "-"+os;
 		var exe_file = p.toString();
-		var out = neko.io.File.write(exe_file,true);
+		var out = sys.io.File.write(exe_file,true);
 		out.write(exe_content);
 		out.write(content);
 		out.writeString("NEKO");
@@ -37,8 +36,8 @@ class Run {
 	}
 
 	static function createDir( d ) {
-		if( !neko.FileSystem.exists(d) )
-			neko.FileSystem.createDirectory(d);
+		if( !sys.FileSystem.exists(d) )
+			sys.FileSystem.createDirectory(d);
 	}
 
 	static var bundle_xml = '<?xml version="1.0" encoding="UTF-8"?>
@@ -69,7 +68,7 @@ class Run {
 </plist>';
 
 	static function createBundle( name, exe ) {
-		var path = new neko.io.Path(exe);
+		var path = new haxe.io.Path(exe);
 		var exe_name = path.file;
 		path.ext = "app";
 		path.file = name;
@@ -78,29 +77,29 @@ class Run {
 		createDir(dir+"/Contents");
 		createDir(dir+"/Contents/MacOS");
 		var bundle_exe = dir+"/Contents/MacOS/"+exe_name;
-		var f = neko.io.File.write(bundle_exe,true);
-		var content = neko.io.File.getContent(exe);
+		var f = sys.io.File.write(bundle_exe,true);
+		var content = sys.io.File.getContent(exe);
 		var sign = haxe.Md5.encode(content);
 		f.writeString(content);
 		f.close();
-		neko.Sys.command('chmod +x "'+bundle_exe+'"');
+		Sys.command('chmod +x "'+bundle_exe+'"');
 		var inf = new haxe.Template(bundle_xml).execute({
 			exe : exe_name,
 			name : name,
 			sign : sign,
 			version : "1.0",
 		});
-		var f = neko.io.File.write(dir+"/Contents/Info.plist",true);
+		var f = sys.io.File.write(dir+"/Contents/Info.plist",true);
 		f.writeString(inf);
 		f.close();
-		var f = neko.io.File.write(dir+"/Contents/PkgInfo",true);
+		var f = sys.io.File.write(dir+"/Contents/PkgInfo",true);
 		f.writeString("APPL");
 		f.writeString(sign);
 		f.close();
 	}
 
 	static function setConsoleMode( exe, console ) {
-		var f = neko.io.File.read(exe,true);
+		var f = sys.io.File.read(exe,true);
 		f.seek(0x3C,SeekBegin);
 		var pe_pos = f.readUInt16();
 		f.seek(pe_pos,SeekBegin);
@@ -111,7 +110,7 @@ class Run {
 		f.readByte();
 		var end = f.readAll();
 		f.close();
-		var f = neko.io.File.write(exe,true);
+		var f = sys.io.File.write(exe,true);
 		f.write(begin);
 		f.writeByte(if( console ) 0x03 else 0x02);
 		f.write(end);
@@ -119,7 +118,7 @@ class Run {
 	}
 
 	static function main() {
-		var args = neko.Sys.args();
+		var args = Sys.args();
 		var forwin = true, forosx = true, forlinux = true;
 		var execute = false;
 		var console_mode = false;
@@ -150,28 +149,28 @@ class Run {
 
 		var file = args.shift();
 		if( file == null ) {
-			neko.Lib.print("Please specify a .n file to package");
-			neko.Sys.exit(1);
+			Sys.print("Please specify a .n file to package");
+			Sys.exit(1);
 		}
 		var content = try
-			neko.io.File.getBytes(file)
+			sys.io.File.getBytes(file)
 		catch( e : Dynamic ) try {
 			file = args.pop()+file;
-			neko.io.File.getBytes(file);
+			sys.io.File.getBytes(file);
 		} catch( e : Dynamic ) {
-			neko.Lib.print("Could not find file '"+file+"', please specify absolute path");
-			neko.Sys.exit(2);
+			Sys.print("Could not find file '"+file+"', please specify absolute path");
+			Sys.exit(2);
 			null;
 		}
 		var exe_win = if( forwin ) build(file,content,"win",false) else null;
 		var exe_osx = if( forosx ) build(file,content,"osx",false) else null;
 		var exe_linux = if( forlinux ) build(file,content,"linux",console_mode) else null;
-		var system = neko.Sys.systemName();
+		var system = Sys.systemName();
 		var win = (system == "Windows");
 		if( !win ) {
-			if( forwin ) neko.Sys.command("chmod +x "+exe_win);
-			if( forosx ) neko.Sys.command("chmod +x "+exe_osx);
-			if( forlinux ) neko.Sys.command("chmod +x "+exe_linux);
+			if( forwin ) Sys.command("chmod +x "+exe_win);
+			if( forosx ) Sys.command("chmod +x "+exe_osx);
+			if( forlinux ) Sys.command("chmod +x "+exe_linux);
 		}
 		if( forwin && console_mode )
 			setConsoleMode(exe_win,true);
@@ -186,15 +185,15 @@ class Run {
 			}
 			if( cmd == null )
 				throw "Can't run since it's not built";
-			var p = new neko.io.Path(cmd);
+			var p = new haxe.io.Path(cmd);
 			if( p.dir != null ) {
-				neko.Sys.setCwd(p.dir);
+				Sys.setCwd(p.dir);
 				p.dir = if( win ) null else ".";
 			}
 			if( system == "Mac" && bundle_name != null )
-				neko.Sys.command('open "'+bundle_name+'.app"');
+				Sys.command('open "'+bundle_name+'.app"');
 			else
-				neko.Sys.command( p.toString() );
+				Sys.command( p.toString() );
 		}
 	}
 }
