@@ -165,12 +165,16 @@ class Run {
 		var exe_win = if( forwin ) build(file,content,"win",false) else null;
 		var exe_osx = if( forosx ) build(file,content,"osx",false) else null;
 		var exe_linux = if( forlinux ) build(file,content,"linux",console_mode) else null;
+		var exe_linux64 = if( forlinux ) build(file,content,"linux64",console_mode) else null;
 		var system = Sys.systemName();
 		var win = (system == "Windows");
 		if( !win ) {
 			if( forwin ) Sys.command("chmod +x "+exe_win);
 			if( forosx ) Sys.command("chmod +x "+exe_osx);
-			if( forlinux ) Sys.command("chmod +x "+exe_linux);
+			if( forlinux ) {
+				Sys.command("chmod +x "+exe_linux);
+				Sys.command("chmod +x "+exe_linux64);
+			}
 		}
 		if( forwin && console_mode )
 			setConsoleMode(exe_win,true);
