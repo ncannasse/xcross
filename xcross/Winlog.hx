@@ -3,14 +3,13 @@ import neko.vm.Ui;
 
 class Winlog {
 
-	var w : Void;
-	public var text(default,setText) : String;
-	public var button(default,setButton) : String;
-	public var enabled(default,setEnabled) : Bool;
+	var w : Dynamic;
+	public var text(default,set) : String;
+	public var button(default,set) : String;
+	public var enabled(default,set) : Bool;
 
 	public function new( title : String ) {
-		var me = this;
-		w = Ui.syncResult(callback(winlog_new,untyped title.__s,function() { me.onClick(); }));
+		w = Ui.syncResult(winlog_new.bind(untyped title.__s,function() onClick()));
 		text = "";
 		button = "";
 		enabled = false;
@@ -31,30 +30,30 @@ class Winlog {
 	}
 
 	public function destroy() {
-		Ui.syncResult(callback(winlog_destroy,w));
+		Ui.syncResult(winlog_destroy.bind(w));
 	}
 
-	function setText(t) {
+	function set_text(t) {
 		text = t;
-		Ui.syncResult(callback(winlog_set,w,untyped t.__s));
+		Ui.syncResult(winlog_set.bind(w,untyped t.__s));
 		return t;
 	}
 
-	function setButton(t) {
+	function set_button(t) {
 		button = t;
-		Ui.syncResult(callback(winlog_set_button,w,untyped t.__s,if( enabled == null ) false else enabled));
+		Ui.syncResult(winlog_set_button.bind(w,untyped t.__s,if( enabled == null ) false else enabled));
 		return t;
 	}
 
-	function setEnabled(e) {
+	function set_enabled(e) {
 		enabled = e;
-		Ui.syncResult(callback(winlog_set_button,w,untyped button.__s,e));
+		Ui.syncResult(winlog_set_button.bind(w,untyped button.__s,e));
 		return e;
 	}
 
-	static var winlog_new : Void -> (Void -> Void) -> Void = neko.Lib.load("xcross","os_winlog_new",2);
-	static var winlog_set : Void -> Void -> Void = neko.Lib.load("xcross","os_winlog_set",2);
-	static var winlog_set_button : Void -> Void -> Bool -> Void = neko.Lib.load("xcross","os_winlog_set_button",3);
-	static var winlog_destroy : (Void) -> Void = neko.Lib.load("xcross","os_winlog_destroy",1);
+	static var winlog_new : Dynamic -> (Void -> Void) -> Dynamic = neko.Lib.load("xcross","os_winlog_new",2);
+	static var winlog_set : Dynamic -> Dynamic -> Void = neko.Lib.load("xcross","os_winlog_set",2);
+	static var winlog_set_button : Dynamic -> Dynamic -> Bool -> Void = neko.Lib.load("xcross","os_winlog_set_button",3);
+	static var winlog_destroy : Dynamic -> Void = neko.Lib.load("xcross","os_winlog_destroy",1);
 
 }

@@ -30,7 +30,7 @@ class Run {
 		out.write(exe_content);
 		out.write(content);
 		out.writeString("NEKO");
-		out.writeUInt30(exe_content.length);
+		out.writeInt32(exe_content.length);
 		out.close();
 		return exe_file;
 	}
@@ -79,7 +79,7 @@ class Run {
 		var bundle_exe = dir+"/Contents/MacOS/"+exe_name;
 		var f = sys.io.File.write(bundle_exe,true);
 		var content = sys.io.File.getContent(exe);
-		var sign = haxe.Md5.encode(content);
+		var sign = haxe.crypto.Md5.encode(content);
 		f.writeString(content);
 		f.close();
 		Sys.command('chmod +x "'+bundle_exe+'"');

@@ -20,22 +20,22 @@ import neko.vm.Ui;
 class Api {
 
 	public static function message( title : String, message : String ) {
-		Ui.syncResult(callback(os_dialog,untyped title.__s,untyped message.__s,false,false));
+		Ui.syncResult(os_dialog.bind(untyped title.__s,untyped message.__s,false,false));
 	}
 
 	public static function error( title : String, message : String ) {
-		Ui.syncResult(callback(os_dialog,untyped title.__s,untyped message.__s,true,false));
+		Ui.syncResult(os_dialog.bind(untyped title.__s,untyped message.__s,true,false));
 	}
 
 	public static function confirm( title : String, message : String ) : Bool {
-		return Ui.syncResult(callback(os_dialog,untyped title.__s,untyped message.__s,false,true));
+		return Ui.syncResult(os_dialog.bind(untyped title.__s,untyped message.__s,false,true));
 	}
 
 	public static function authorize() : Bool {
 		return os_authorize();
 	}
 
-	static var os_dialog : Void -> Void -> Bool -> Bool -> Bool = neko.Lib.load("xcross","os_dialog",4);
+	static var os_dialog : Dynamic -> Dynamic -> Bool -> Bool -> Bool = neko.Lib.load("xcross","os_dialog",4);
 	static var os_authorize = neko.Lib.load("xcross","os_authorize",0);
 
 }
